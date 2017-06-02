@@ -62,7 +62,7 @@ function getConfig() {
 
 
     /*
-	
+
 	console.log("connecting...")
   var connection = mysql.createConnection({
     user: 'root',
@@ -71,9 +71,9 @@ function getConfig() {
     port: 42001,
     database: 'guru_db',
   });
-  
+
   connection.connect();
-  
+
   return connection;
  */
 
@@ -132,7 +132,7 @@ function makeRouter(connection) {
 
             res.send('Error: Missing register username or password');
         } else {
-			
+
 			  connection.query("SELECT username FROM Users where username = '" + req.body.username + "' ORDER BY username LIMIT 1;", function(err, rows, fields) {
 					if (err) {
 						console.log('error: ', err);
@@ -141,21 +141,21 @@ function makeRouter(connection) {
                         if (rows[0] != null) {
 							res.send('User "' + rows[0].username + '" already exists.');
                         } else {
-							
-							
+
+
 							//create salt, add salt to password, create hash, hash salted password.
-							var salt = csprng(256, 32);	
+							var salt = csprng(256, 32);
 							var saltedpass = salt+req.body.password;
 							var hash = crypto.createHash('sha256');
 							var hashedsaltedpass = hash.update(saltedpass).digest('base64');
-							
-									
+
+
 							connection.query("INSERT into Users (username, password, salt) VALUES ('" + req.body.username + "', '" + hashedsaltedpass + "', '" + salt + "');", function(err, rows, fields) {
 								if (err) {
 									console.log('error: ', err);
 								throw err;
 							}
-						res.send('created');
+						res.send('New user created');
 						//send('Created user: ' + req.body.username + ' successfully.');
 
 						});
@@ -178,14 +178,14 @@ function makeRouter(connection) {
 						console.log('error: ', err);
 						throw err;
 					}
-					
+
 					if(rows[0] != null) {
-					
+
 					var passwordattempt = rows[0].salt + req.body.password;
 					var hash = crypto.createHash('sha256');
 					var paHash = hash.update(passwordattempt).digest('base64');
-					
-					
+
+
                         if ((paHash == rows[0].password)) {
 							console.log("made it to username exists")
 							res.send('Logged in "' + rows[0].username + '" successfully.');
@@ -193,7 +193,7 @@ function makeRouter(connection) {
 							console.log("made it to login unsuccessful")
 							res.send('Login unsuccessful')
 						}
-                    
+
 					console.log("made it to login unsuccessful 2")
 					//res.send('Login Unsuccessful 2');
 					} else {
@@ -208,7 +208,7 @@ function makeRouter(connection) {
 	con = connectToDb(db_config).then(function (connection) {
 		return connection;
 	});
-	
+
 	con.then(function (connection) {
 	connection.query("SELECT 1 FROM Users where username = '" + req.body.username + "' AND password = '" + req.body.password + " ORDER BY username LIMIT 1;"), function(err, rows, fields) {
       if (err) {
